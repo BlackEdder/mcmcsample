@@ -1,0 +1,18 @@
+Package: mcmcsample
+Title: Work with posterior samples 
+Version: 0.0.0.9000
+Authors@R: person("Edwin", "van Leeuwen", email = "edwinvanl@gmail.com", role = c("aut", "cre"))
+Description: This package includes tools to work with posterior samples, 
+    e.g. samples resulting from a MCMC run. It focusses on working on 
+    multidimensional samples, while keeping the dependencies between 
+    different parameters intact. In general it tries to avoid any type 
+    of smoothing, but works directly with the actual samples. It includes 
+    functions to plot the different posterior samples, calculate and plot 
+    credible regions and other helper functions. 
+Depends: R (>= 3.2.4)
+License: GPL-3 
+LazyData: true
+Imports: 
+    geometry,
+    ggplot2
+Suggests: testthat
