@@ -7,3 +7,23 @@ test_that("normalize returns values between 0 and 1", {
   expect_equal( summ$max, c(1,1) )
   expect_equal( summ$min, c(0,0) )
 })
+
+test_that("hpdi.discard.id discards the correct id", {
+  df <- data.frame(matrix(
+    c( 0, 0, 0,
+       1, 100, 1,
+       1.9,110, 1, # should be removed when normalizing
+       1.1,150, 1,
+       0.1, 2, 0.1,
+       0.97, 90, 0.95
+       ), ncol=3, byrow=T))
+  expect_equal( hpdi.discard.id( df ), 3)
+})
+
+test_that("hpdi.discard.id works for multiple values", {
+  full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -10, -10, 10, 10),
+    "y"=c(runif(96,-1,1), -10, 10, 10, -10)
+  ))
+  expect_equal( sort(hpdi.discard.id( full.df, 4 )), c(97,98,99,100) )
+})
