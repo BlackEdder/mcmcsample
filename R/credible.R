@@ -29,12 +29,28 @@ hpdi.discard.id.one <- function( data )
 
 hpdi.discard.id <- function( data, dim = 1, normalize = T)
 {
-  d.f <- data
+
+}
+
+#' @title Calculate samples outside credibility region using convex hull method
+#' 
+#' @description Calculate which samples will fall outside a credibility region.
+#' 
+#' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
+#' @param max.outside Number of samples should lie outside
+#' @param normalize Whether to normalize the data before calculating the region.
+#' 
+#' @return A boolean vector, with true for samples inside the credibility region
+#'
+#' @export
+ci.chull <- function( samples, max.outside=1, normalize=T )
+{
+  d.f <- samples
   if (normalize)
-    d.f <- normalize.samples(data)
+    d.f <- normalize.samples(samples)
   row.id <- seq(1,nrow(d.f))
   ids <- c()
-  while( length(ids)<dim )
+  while( length(ids)<max.outside )
   {
     id <- hpdi.discard.id.one( d.f[row.id,] )
     ids <- c(ids,row.id[id])
@@ -43,42 +59,25 @@ hpdi.discard.id <- function( data, dim = 1, normalize = T)
   return(ids)
 }
 
-#' @title Calculate samples within credibility region
+#' @title Calculate samples outside credibility region using minmax method
 #' 
-#' @description Calculate which samples will fall inside a credibility region and which outside.
+#' @description Calculate which samples will fall outside a credibility region.
 #' 
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
-#' @param ci Minimum fraction the credibility region should cover
-#' @param ... Parameters forwarded to the method used for calculating the regions
+#' @param max.outside Number of samples should lie outside
 #' 
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
 #' @export
-ci.chull <- function( samples, ci = 0.9, ... )
-{
-  # This can mostly be moved to general function that takes hpdi.discard.id as a function
-  discard <- floor(nrow(samples)-nrow(samples)*ci)
-  inside <- rep(T,nrow(samples))
-  ids <- hpdi.discard.id( samples, discard, ... )
-  if (length(ids)==0)
-    warning("No samples could be discarded, choose a lower ci value")
-  inside[ids] <- F
-  return(inside)
-}
-
-
-minmax.discard.id <- function( samples, max.discard=1, normalize=T )
+ci.minmax <- function( samples, max.outside=1 )
 {
   d.f <- samples
   
-  # Normalization is not needed, because min max is independent from the value range.
-  #if (normalize)
-  #  d.f <- normalize.samples(samples)
   row.id <- seq(1,nrow(d.f))
 
   ids <- c()
   next.ids <- c()
-  while( length(ids) + length(next.ids) <= max.discard )
+  while( length(ids) + length(next.ids) <= max.outside )
   {
     ids <- c(ids, next.ids)
     next.ids <- c()
@@ -94,3 +93,32 @@ minmax.discard.id <- function( samples, max.discard=1, normalize=T )
   }
   return(ids)
 }
+
+#' @title Calculate samples within credibility region
+#' 
+#' @description Calculate which samples will fall inside a credibility region and which outside.
+#' 
+#' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
+#' @param ci Minimum fraction the credibility region should cover
+#' @param method Method to use. Currently chull and minmax are supported
+#' @param ... Parameters forwarded to the method used for calculating the regions
+#' 
+#' @return A boolean vector, with true for samples inside the credibility region
+#'
+#' @export
+inside.ci <- function( samples, ci = 0.9, method = "chull", ... )
+{
+  # This can mostly be moved to general function that takes hpdi.discard.id as a function
+  discard <- floor(nrow(samples)-nrow(samples)*ci)
+  inside <- rep(T,nrow(samples))
+  if (method == "chull")
+    ids <- ci.chull( samples, discard, ... )
+  else if (method == "minmax")
+    ids <- ci.minmax( samples, discard, ... )
+  
+  if (length(ids)==0)
+    warning("No samples could be discarded, choose a lower ci value")
+  inside[ids] <- F
+  return(inside)
+}
+
