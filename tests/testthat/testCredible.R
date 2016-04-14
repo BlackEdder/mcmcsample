@@ -68,3 +68,13 @@ test_that("inside.ci takes minmax as method", {
   expect_equal( length(inside.ci( full.df, 0.8, method="minmax" )), 100 )
   expect_equal( inside.ci( full.df, 0.9, method="minmax" )[97:100], c(F,F,F,F) )
 })
+
+test_that("inside.ci works on one dimension", {
+  full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -10.1, -10, 10, 10.1)
+  ))
+  expect_gte( sum(inside.ci( full.df, 0.9, method="chull" )), 90 )
+  expect_gte( sum(inside.ci( full.df, 0.8, method="minmax" )), 80 )
+  expect_equal( length(inside.ci( full.df, 0.8, method="minmax" )), 100 )
+  expect_equal( inside.ci( full.df, 0.9, method="minmax" )[97:100], c(F,F,F,F) )
+})

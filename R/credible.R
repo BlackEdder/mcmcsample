@@ -14,22 +14,29 @@ normalize.samples <- function( data )
 # throw you away and closest n friends. That might solve some problems with
 # outlying clusters. Quite dangerous though.
 # Maybe add a jitter=F to deal with outliers that are exactly the same
-hpdi.discard.id.one <- function( data )
+hpdi.discard.id.one <- function( samples )
 {
-  df <- data
-  hull <- geometry::convhulln(df, "FA")
-  # Foreach sample in hull$hull, calculate the reduction in hull$vol when discarded
-  reductions <- sapply(unique(as.vector(hull$hull)), function(id) {
-    nv <- geometry::convhulln(df[-id,], "FA")$area
-    list( "id"=id, "delta" = hull$area - nv)
-  })
-  # Throw away the one which results in biggest reduction
-  return(reductions[,which.max(reductions[2,])]$id)
-}
-
-hpdi.discard.id <- function( data, dim = 1, normalize = T)
-{
-
+  df <- samples
+  if (ncol(df)>1)
+  {
+    hull <- geometry::convhulln(df, "FA")
+    # Foreach sample in hull$hull, calculate the reduction in hull$vol when discarded
+    reductions <- sapply(unique(as.vector(hull$hull)), function(id) {
+      nv <- geometry::convhulln(df[-id,], "FA")$area
+      list( "id"=id, "delta" = hull$area - nv)
+    })
+    # Throw away the one which results in biggest reduction
+    return(reductions[,which.max(reductions[2,])]$id)
+  } else {
+    v <- df[,1]
+    idmin <- which.min(v)
+    idmax <- which.max(v)
+    rmin <- range(v[-idmin])
+    rmax <- range(v[-idmax])
+    if ((rmin[2]-rmin[1])>(rmax[2]-rmax[1]))
+      return( idmax )
+    return( idmin )
+  }
 }
 
 #' @title Calculate samples outside credibility region using convex hull method
@@ -46,13 +53,14 @@ hpdi.discard.id <- function( data, dim = 1, normalize = T)
 ci.chull <- function( samples, max.outside=1, normalize=T )
 {
   d.f <- samples
-  if (normalize)
-    d.f <- normalize.samples(samples)
   row.id <- seq(1,nrow(d.f))
   ids <- c()
   while( length(ids)<max.outside )
   {
-    id <- hpdi.discard.id.one( d.f[row.id,] )
+    sub.df <- d.f[row.id,,drop=F]
+    if (normalize)
+      sub.df <- normalize.samples(sub.df)
+    id <- hpdi.discard.id.one( sub.df  )
     ids <- c(ids,row.id[id])
     row.id <- row.id[-id]
   }
