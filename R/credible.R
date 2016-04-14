@@ -50,8 +50,39 @@ hpdi.discard.id <- function( data, dim = 1, normalize = T)
 #'
 ci.chull <- function( samples, ci = 0.9, ... )
 {
+  # This can mostly be moved to general function that takes hpdi.discard.id as a function
   discard <- floor(nrow(samples)-nrow(samples)*ci)
   inside <- rep(T,nrow(samples))
-  inside[hpdi.discard.id( samples, discard, ... )] <- F
+  ids <- hpdi.discard.id( samples, discard, ... )
+  if (length(ids)==0)
+    warning("No samples could be discarded, choose a lower ci value")
+  inside[ids] <- F
   return(inside)
+}
+
+
+minmax.discard.id <- function( samples, max.discard=1, normalize=T )
+{
+  d.f <- samples
+  if (normalize)
+    d.f <- normalize.samples(samples)
+  row.id <- seq(1,nrow(d.f))
+
+  ids <- c()
+  next.ids <- c()
+  while( length(ids) + length(next.ids) <= max.discard )
+  {
+    ids <- c(ids, next.ids)
+    next.ids <- c()
+    for( j in 1:ncol(d.f) )
+    {
+      next.ids <- c(next.ids,
+                    row.id[which.min(d.f[row.id,j])],
+                    row.id[which.max(d.f[row.id,j])]
+                    )
+    }
+    next.ids <- unique(next.ids)
+    row.id <- row.id[-next.ids]
+  }
+  return(ids)
 }

@@ -38,3 +38,22 @@ test_that("ci.chull returns the correct number of samples", {
   expect_equal( length(ci.chull( full.df, 0.8 )), 100 )
   expect_equal( ci.chull( full.df, 0.9 )[97:100], c(F,F,F,F) )
 })
+
+test_that("minmax.discard.id works for multiple values", {
+  full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -10, 0, 10, 0),
+    "y"=c(runif(96,-1,1), 0, 10, 0, -10)
+  ))
+  expect_equal( length(minmax.discard.id( full.df, 3 )), 0 )
+  expect_equal( sort(minmax.discard.id( full.df, 4 )), c(97,98,99,100) )
+  expect_equal( sort(minmax.discard.id( full.df, 6 )), c(97,98,99,100) )
+})
+
+test_that("minmax.discard.id only returns unique values", {
+    full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -5, 0, 5, 0, -10, 10),
+    "y"=c(runif(96,-1,1), 0, 5, 0, -5, -10, 10)
+  ))
+  expect_equal( sort(minmax.discard.id( full.df, 4 )), c(101,102) )
+  expect_equal( length(minmax.discard.id( full.df, 7 )), 6 )
+})
