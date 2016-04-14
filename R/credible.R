@@ -14,13 +14,13 @@ normalize.samples <- function( data )
 # throw you away and closest n friends. That might solve some problems with
 # outlying clusters. Quite dangerous though.
 # Maybe add a jitter=F to deal with outliers that are exactly the same
-.hpdi.discard.id.one <- function( data )
+hpdi.discard.id.one <- function( data )
 {
   df <- data
-  hull <- convhulln(df, "FA")
+  hull <- geometry::convhulln(df, "FA")
   # Foreach sample in hull$hull, calculate the reduction in hull$vol when discarded
   reductions <- sapply(unique(as.vector(hull$hull)), function(id) {
-    nv <- convhulln(df[-id,], "FA")$area
+    nv <- geometry::convhulln(df[-id,], "FA")$area
     list( "id"=id, "delta" = hull$area - nv)
   })
   # Throw away the one which results in biggest reduction
@@ -36,16 +36,24 @@ hpdi.discard.id <- function( data, dim = 1, normalize = T)
   ids <- c()
   while( length(ids)<dim )
   {
-    id <- .hpdi.discard.id.one( d.f[row.id,] )
+    id <- hpdi.discard.id.one( d.f[row.id,] )
     ids <- c(ids,row.id[id])
     row.id <- row.id[-id]
   }
   return(ids)
 }
 
-
+#' @title Calculate samples within credibility region
+#' 
+#' @description Calculate which samples will fall inside a credibility region and which outside.
+#' 
+#' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
+#' @param ci Minimum fraction the credibility region should cover
+#' @param ... Parameters forwarded to the method used for calculating the regions
+#' 
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
+#' @export
 ci.chull <- function( samples, ci = 0.9, ... )
 {
   # This can mostly be moved to general function that takes hpdi.discard.id as a function
@@ -62,8 +70,10 @@ ci.chull <- function( samples, ci = 0.9, ... )
 minmax.discard.id <- function( samples, max.discard=1, normalize=T )
 {
   d.f <- samples
-  if (normalize)
-    d.f <- normalize.samples(samples)
+  
+  # Normalization is not needed, because min max is independent from the value range.
+  #if (normalize)
+  #  d.f <- normalize.samples(samples)
   row.id <- seq(1,nrow(d.f))
 
   ids <- c()

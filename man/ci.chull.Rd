@@ -2,10 +2,21 @@
 % Please edit documentation in R/credible.R
 \name{ci.chull}
 \alias{ci.chull}
+\title{Calculate samples within credibility region}
 \usage{
 ci.chull(samples, ci = 0.9, ...)
 }
+\arguments{
+\item{samples}{Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample}
+
+\item{ci}{Minimum fraction the credibility region should cover}
+
+\item{...}{Parameters forwarded to the method used for calculating the regions}
+}
 \value{
 A boolean vector, with true for samples inside the credibility region
+}
+\description{
+Calculate which samples will fall inside a credibility region and which outside.
 }
 
