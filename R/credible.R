@@ -22,8 +22,8 @@ hpdi.discard.id.one <- function( samples )
     hull <- geometry::convhulln(df, "FA")
     # Foreach sample in hull$hull, calculate the reduction in hull$vol when discarded
     reductions <- sapply(unique(as.vector(hull$hull)), function(id) {
-      nv <- geometry::convhulln(df[-id,], "FA")$area
-      list( "id"=id, "delta" = hull$area - nv)
+      nv <- geometry::convhulln(df[-id,], "FA")$vol
+      list( "id"=id, "delta" = hull$vol - nv)
     })
     # Throw away the one which results in biggest reduction
     return(reductions[,which.max(reductions[2,])]$id)
