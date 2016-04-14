@@ -1,5 +1,5 @@
 library(broom)
-context( "Geometry helper functions")
+context( "Credible helper functions")
 
 test_that("normalize returns values between 0 and 1", {
   df <- data.frame( list("x"=runif(100,0,1),"y"=runif(100,-3,-1)) )
@@ -26,4 +26,15 @@ test_that("hpdi.discard.id works for multiple values", {
     "y"=c(runif(96,-1,1), -10, 10, 10, -10)
   ))
   expect_equal( sort(hpdi.discard.id( full.df, 4 )), c(97,98,99,100) )
+})
+
+test_that("ci.chull returns the correct number of samples", {
+  full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -10, -10, 10, 10),
+    "y"=c(runif(96,-1,1), -10, 10, 10, -10)
+  ))
+  expect_equal( sum(ci.chull( full.df, 0.9 )), 90 )
+  expect_equal( sum(ci.chull( full.df, 0.8 )), 80 )
+  expect_equal( length(ci.chull( full.df, 0.8 )), 100 )
+  expect_equal( ci.chull( full.df, 0.9 )[97:100], c(F,F,F,F) )
 })

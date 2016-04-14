@@ -44,3 +44,14 @@ hpdi.discard.id <- function( data, dim = 1, normalize = T)
   }
   return(ids)
 }
+
+
+#' @return A boolean vector, with true for samples inside the credibility region
+#'
+ci.chull <- function( samples, ci = 0.9, ... )
+{
+  discard <- floor(nrow(samples)-nrow(samples)*ci)
+  inside <- rep(T,nrow(samples))
+  inside[hpdi.discard.id( samples, discard, ... )] <- F
+  return(inside)
+}
