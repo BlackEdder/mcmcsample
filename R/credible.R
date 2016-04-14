@@ -1,5 +1,3 @@
-library(geometry)
-
 normalize.samples <- function( data )
 {
   df <- data
