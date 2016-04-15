@@ -5,4 +5,13 @@ resulting from a MCMC run. It focusses on working on multidimensional samples,
 while keeping the dependencies between different parameters intact. In general
 it tries to avoid any type of smoothing, but works directly with the actual
 samples. It includes functions to plot the different posterior samples,
-calculate and plot credible regions and other helper functions. D
+calculate and plot credible regions and other helper functions.
+
+# Install
+
+Easiest way to install the pacakge is by installing it using devtools. Devtools is available from CRAN (`install.packages("devtools")`).
+
+```r
+library(devtools)
+install_github("BlackEdder/mcmcsample")
+```
