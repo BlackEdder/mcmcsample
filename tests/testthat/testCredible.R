@@ -78,3 +78,17 @@ test_that("inside.ci works on one dimension", {
   expect_equal( length(inside.ci( full.df, 0.8, method="minmax" )), 100 )
   expect_equal( inside.ci( full.df, 0.9, method="minmax" )[97:100], c(F,F,F,F) )
 })
+
+test_that("bin.id works on data frames", {
+  full.df <- data.frame(list(
+    "x"=runif(100,-1,1),
+    "y"=runif(100,100,1000)
+  ))
+  bins <- apply(full.df,2,bin.id)
+  expect_equal( range(bins[,1]), c(1,10) )
+  expect_equal( range(bins[,2]), c(1,10) )
+
+  bins <- apply(full.df,2,function(v) bin.id(v,51))
+  expect_equal( range(bins[,1]), c(1,51) )
+  expect_equal( range(bins[,2]), c(1,51) )
+})
