@@ -40,13 +40,13 @@ hpdi.discard.id.one <- function( samples )
 }
 
 #' @title Calculate samples outside credibility region using convex hull method
-#' 
+#'
 #' @description Calculate which samples will fall outside a credibility region.
-#' 
+#'
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
 #' @param max.outside Number of samples should lie outside
 #' @param normalize Whether to normalize the data before calculating the region.
-#' 
+#'
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
 #' @export
@@ -68,19 +68,19 @@ ci.chull <- function( samples, max.outside=1, normalize=T )
 }
 
 #' @title Calculate samples outside credibility region using minmax method
-#' 
+#'
 #' @description Calculate which samples will fall outside a credibility region.
-#' 
+#'
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
 #' @param max.outside Number of samples should lie outside
-#' 
+#'
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
 #' @export
 ci.minmax <- function( samples, max.outside=1 )
 {
   d.f <- samples
-  
+
   row.id <- seq(1,nrow(d.f))
 
   ids <- c()
@@ -103,14 +103,14 @@ ci.minmax <- function( samples, max.outside=1 )
 }
 
 #' @title Calculate samples within credibility region
-#' 
+#'
 #' @description Calculate which samples will fall inside a credibility region and which outside.
-#' 
+#'
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
 #' @param ci Minimum fraction the credibility region should cover
 #' @param method Method to use. Currently chull and minmax are supported
 #' @param ... Parameters forwarded to the method used for calculating the regions
-#' 
+#'
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
 #' @export
@@ -123,10 +123,22 @@ inside.ci <- function( samples, ci = 0.9, method = "chull", ... )
     ids <- ci.chull( samples, discard, ... )
   else if (method == "minmax")
     ids <- ci.minmax( samples, discard, ... )
-  
+
   if (length(ids)==0)
     warning("No samples could be discarded, choose a lower ci value")
   inside[ids] <- F
   return(inside)
 }
 
+bin.id <- function( v, n = 10 )
+{
+  r <- range(v)
+  binwidth <- (r[2]-r[1])/(n)
+  sapply( v, function(x)
+  {
+    id <- 1+floor((x-r[1])/binwidth)
+    if (id == n+1) # The max value goes into the previous bin
+      id <- id - 1
+    return(id)
+  } )
+}
