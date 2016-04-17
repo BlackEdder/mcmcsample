@@ -102,13 +102,53 @@ ci.minmax <- function( samples, max.outside=1 )
   return(ids)
 }
 
+#' @title Calculate samples outside credibility region using bin method
+#'
+#' @description Calculate which samples will fall outside a credibility region.
+#'
+#' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
+#' @param max.outside Number of samples should lie outside
+#'
+#' @return A boolean vector, with true for samples inside the credibility region
+#'
+#' @import data.table
+#' @export
+ci.bin <- function( samples, max.outside=1 )
+{
+  d.f <- samples
+
+  row.id <- seq(1,nrow(d.f))
+
+  ids <- c()
+  running <- TRUE
+
+  while( running )
+  {
+    no.bins <- 2
+    dropped <- bin.min(d.f[row.id,], no.bins)
+
+    if (length(dropped$ids)+length(ids) <= max.outside) {
+      ids <- c(ids, dropped$ids)
+      row.id <- row.id[-dropped$ids]
+      if (length(ids)==max.outside)
+        running <- FALSE
+    }
+    else if (dropped$size>1)
+    {
+      no.bins <- no.bins + 1
+    } else
+      running <- FALSE
+  }
+  return(ids)
+}
+
 #' @title Calculate samples within credibility region
 #'
 #' @description Calculate which samples will fall inside a credibility region and which outside.
 #'
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
 #' @param ci Minimum fraction the credibility region should cover
-#' @param method Method to use. Currently chull and minmax are supported
+#' @param method Method to use. Currently bin,chull and minmax are supported
 #' @param ... Parameters forwarded to the method used for calculating the regions
 #'
 #' @return A boolean vector, with true for samples inside the credibility region
@@ -123,6 +163,8 @@ inside.ci <- function( samples, ci = 0.9, method = "chull", ... )
     ids <- ci.chull( samples, discard, ... )
   else if (method == "minmax")
     ids <- ci.minmax( samples, discard, ... )
+  else if (method == "bin")
+    ids <- ci.bin( samples, discard, ... )
 
   if (length(ids)==0)
     warning("No samples could be discarded, choose a lower ci value")
@@ -141,4 +183,26 @@ bin.id <- function( v, n = 10 )
       id <- id - 1
     return(id)
   } )
+}
+
+bin.min <- function( samples, n )
+{
+  smpls <- data.table::as.data.table( samples )
+  bins <- data.table::as.data.table(apply(smpls,2,function(v) bin.id(v,n)))
+  grouped <- bins[,.N,by=eval(colnames(bins))]
+  min <- min( grouped$N )
+  matched <- grouped[N==min,1:ncol(smpls),with=F]
+  ids <- c()
+
+  for (id in 1:nrow(bins) )
+  {
+    for (k in 1:nrow(matched) )
+    {
+      if( identical(bins[id,], matched[k,]) )
+      {
+        ids <- c(ids, id)
+      }
+    }
+  }
+  return( list( "size"=min, "ids"=ids ) )
 }

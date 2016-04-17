@@ -92,3 +92,14 @@ test_that("bin.id works on data frames", {
   expect_equal( range(bins[,1]), c(1,51) )
   expect_equal( range(bins[,2]), c(1,51) )
 })
+
+test_that("inside.ci takes bin as method", {
+  full.df <- data.frame(list(
+    "x"=c(runif(96,-1,1), -10, -10, 10, 10),
+    "y"=c(runif(96,-1,1), -10, 10, 10, -10)
+  ))
+  expect_gte( sum(inside.ci( full.df, 0.9, method="bin" )), 90 )
+  expect_gte( sum(inside.ci( full.df, 0.8, method="bin" )), 80 )
+  expect_equal( length(inside.ci( full.df, 0.8, method="bin" )), 100 )
+  expect_equal( inside.ci( full.df, 0.9, method="bin" )[97:100], c(F,F,F,F) )
+})

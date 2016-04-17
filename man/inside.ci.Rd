@@ -11,7 +11,7 @@ inside.ci(samples, ci = 0.9, method = "chull", ...)
 
 \item{ci}{Minimum fraction the credibility region should cover}
 
-\item{method}{Method to use. Currently chull and minmax are supported}
+\item{method}{Method to use. Currently bin,chull and minmax are supported}
 
 \item{...}{Parameters forwarded to the method used for calculating the regions}
 }

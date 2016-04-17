@@ -10,12 +10,14 @@ Description: This package includes tools to work with posterior samples,
     functions to plot the different posterior samples, calculate and plot
     credible regions and other helper functions.
 Depends:
-    R (>= 3.2.4)
+    R (>= 3.2.4),
+    data.table
 License: GPL-3
 LazyData: true
 Imports:
     geometry,
-    ggplot2
+    ggplot2,
+    data.table
 Suggests:
     testthat,
     broom
