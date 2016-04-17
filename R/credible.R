@@ -122,9 +122,9 @@ ci.bin <- function( samples, max.outside=1 )
   ids <- c()
   running <- TRUE
 
+  no.bins <- 2
   while( running )
   {
-    no.bins <- 2
     dropped <- bin.min(d.f[row.id,], no.bins)
 
     if (length(dropped$ids)+length(ids) <= max.outside) {
