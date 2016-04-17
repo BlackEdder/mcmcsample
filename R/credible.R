@@ -88,7 +88,7 @@ ci.minmax <- function( samples, max.outside=1 )
   while( length(ids) + length(next.ids) <= max.outside )
   {
     ids <- c(ids, next.ids)
-    next.ids <- c()
+    length(next.ids) <- 0
     for( j in 1:ncol(d.f) )
     {
       next.ids <- c(next.ids,
