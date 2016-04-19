@@ -153,13 +153,13 @@ ci.bin <- function( samples, max.outside=1 )
 #'
 #' @param samples Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample
 #' @param ci Minimum fraction the credibility region should cover
-#' @param method Method to use. Currently bin,chull and minmax are supported
+#' @param method Method to use. Currently bin, chull and minmax are supported
 #' @param ... Parameters forwarded to the method used for calculating the regions
 #'
 #' @return A boolean vector, with true for samples inside the credibility region
 #'
 #' @export
-inside.ci <- function( samples, ci = 0.9, method = "chull", ... )
+inside.ci <- function( samples, ci = 0.9, method = "bin", ... )
 {
   # This can mostly be moved to general function that takes hpdi.discard.id as a function
   discard <- floor(nrow(samples)-nrow(samples)*ci)
