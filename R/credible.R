@@ -84,20 +84,25 @@ ci.minmax <- function( samples, max.outside=1 )
   row.id <- seq(1,nrow(d.f))
 
   ids <- c()
-  next.ids <- c()
-  while( length(ids) + length(next.ids) <= max.outside )
+  running <- T
+  while( running )
   {
-    ids <- c(ids, next.ids)
-    length(next.ids) <- 0
+    next.ids <- c()
     for( j in 1:ncol(d.f) )
     {
       next.ids <- c(next.ids,
-                    row.id[which.min(d.f[row.id,j])],
-                    row.id[which.max(d.f[row.id,j])]
+                    which.min(d.f[row.id,j]),
+                    which.max(d.f[row.id,j])
                     )
     }
     next.ids <- unique(next.ids)
+    if ( length(ids) + length( next.ids ) <= max.outside )
+      ids <- c(ids, row.id[next.ids])
+    else
+      running <- F
     row.id <- row.id[-next.ids]
+    if (length(ids) != length(unique(ids)))
+      stop("Going wrong")
   }
   return(ids)
 }
