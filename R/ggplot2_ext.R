@@ -1,4 +1,4 @@
-StatCM <- ggproto("StatCM", Stat,
+StatCM <- ggplot2::ggproto("StatCM", ggplot2::Stat,
                   setup_data = function(data,params) {
                     data <- data[order(data$x,data$y),]
                     data$alpha <- rep(0.1,length(data$x))
@@ -9,7 +9,7 @@ StatCM <- ggproto("StatCM", Stat,
                     hg <- rev(seq(2,length(data$x),2))
                     data[c(lw,hg),]
                   },
-                  default_aes = aes(fill = ..id.., colour=..id..),
+                  default_aes = ggplot2::aes(fill = ..id.., colour=..id..),
                   required_aes = c("x", "id")
 )
 

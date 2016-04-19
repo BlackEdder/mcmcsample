@@ -52,8 +52,8 @@ test_that("inside.ci returns the correct number of samples", {
     "x"=c(runif(96,-1,1), -10, -10, 10, 10),
     "y"=c(runif(96,-1,1), -10, 10, 10, -10)
   ))
-  expect_equal( sum(inside.ci( full.df, 0.9 )), 90 )
-  expect_equal( sum(inside.ci( full.df, 0.8 )), 80 )
+  expect_gte( sum(inside.ci( full.df, 0.9 )), 90 )
+  expect_gte( sum(inside.ci( full.df, 0.8 )), 80 )
   expect_equal( length(inside.ci( full.df, 0.8 )), 100 )
   expect_equal( inside.ci( full.df, 0.9 )[97:100], c(F,F,F,F) )
 })

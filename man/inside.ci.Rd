@@ -4,14 +4,14 @@
 \alias{inside.ci}
 \title{Calculate samples within credibility region}
 \usage{
-inside.ci(samples, ci = 0.9, method = "chull", ...)
+inside.ci(samples, ci = 0.9, method = "bin", ...)
 }
 \arguments{
 \item{samples}{Data frame holding the posterior samples. Each row is a sample, each column a parameter in the sample}
 
 \item{ci}{Minimum fraction the credibility region should cover}
 
-\item{method}{Method to use. Currently bin,chull and minmax are supported}
+\item{method}{Method to use. Currently bin, chull and minmax are supported}
 
 \item{...}{Parameters forwarded to the method used for calculating the regions}
 }
