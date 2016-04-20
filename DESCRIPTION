@@ -10,7 +10,7 @@ Description: This package includes tools to work with posterior samples,
     functions to plot the different posterior samples, calculate and plot
     credible regions and other helper functions.
 Depends:
-    R (>= 3.2.4),
+    R (>= 3.1.2),
     data.table
 License: GPL-3
 LazyData: true
@@ -20,5 +20,8 @@ Imports:
     data.table
 Suggests:
     testthat,
-    broom
+    broom,
+    knitr,
+    rmarkdown
 RoxygenNote: 5.0.1
+VignetteBuilder: knitr

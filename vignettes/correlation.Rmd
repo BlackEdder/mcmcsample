@@ -1,0 +1,26 @@
+---
+title: "Plotting correlation between values."
+author: "Edwin van Leeuwen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The mcmcsample package extends ggplot2 to make it easier to plot the correlation between the parameters in your mcmc samples.
+
+```{r}
+library(data.table)
+param1 <- rnorm( 100, 0, 1 )
+param2 <- sapply(param1, function(x) x^2 + rnorm( 1, 0, 1 ) )
+samples <- data.table( data.frame( list("id"=seq(1,length(param1)), "param1"=param1, "param2"=param2) ) )
+```
+
+```{r}
+library(ggplot2)
+library(mcmcsample)
+long.samples <- melt(samples,measure.vars=c("param1","param2"),id.vars = c("id"))
+gg.correlation(long.samples)
+```

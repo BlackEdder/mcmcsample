@@ -3,5 +3,6 @@
 export(ci.bin)
 export(ci.chull)
 export(ci.minmax)
+export(gg.correlation)
 export(inside.ci)
 import(data.table)
