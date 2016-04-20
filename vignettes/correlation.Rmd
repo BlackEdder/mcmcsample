@@ -19,8 +19,8 @@ samples <- data.table( data.frame( list("id"=seq(1,length(param1)), "param1"=par
 ```
 
 ```{r}
-library(ggplot2)
 library(mcmcsample)
+library(ggplot2)
 long.samples <- melt(samples,measure.vars=c("param1","param2"),id.vars = c("id"))
-gg.correlation(long.samples)
+ggs <- gg.correlation(long.samples, "value", "variable")
 ```
