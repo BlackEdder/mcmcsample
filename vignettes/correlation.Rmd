@@ -13,7 +13,7 @@ The mcmcsample package extends ggplot2 to make it easier to plot the correlation
 
 ```{r}
 library(data.table)
-param1 <- rnorm( 100, 0, 1 )
+param1 <- rnorm( 1000, 0, 1 )
 param2 <- sapply(param1, function(x) x^2 + rnorm( 1, 0, 1 ) )
 # Make sure to add a sample.id column
 samples <- data.table( data.frame( list("sample.id"=seq(1,length(param1)), "param1"=param1, "param2"=param2) ) )
@@ -32,7 +32,7 @@ Points that fall outside the credibility interval
 library(mcmcsample)
 library(ggplot2)
 smpls <- samples
-smpls$ci <- inside.ci(samples,0.8, method="chull")
+smpls$ci <- inside.ci(smpls[,.(param1,param2)],0.8, method="bin")
 long.samples <- melt(smpls,measure.vars=c("param1","param2"),id.vars = c("sample.id","ci"))
 ggs <- gg.correlation(long.samples, "value", "variable", colour="ci")
 ```
